@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root {
+  @apply h-full;
+  transition: background-color 0.3s;
+}
+
+html {
+  @apply bg-background-light dark:bg-background-dark;
+}
+
+body {
+  @apply bg-background-light dark:bg-background-dark;
+}
+
+#root {
+  @apply bg-background-light dark:bg-background-dark;
+}
+
+/* small design tokens */
+.btn-primary {
+  @apply px-4 py-2 rounded-lg text-white bg-primary hover:brightness-90 transition-all duration-200;
+}
+
+.card {
+  @apply bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 border border-gray-100 dark:border-gray-700 transition-colors duration-300;
+}
