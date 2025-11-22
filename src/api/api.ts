@@ -11,19 +11,19 @@ export const api = axios.create({
 // -----------------------------
 export const courseService = {
   getAll() {
-    return api.get("api/courses").then((res) => res.data);
+    return api.get("/api/courses").then((res) => res.data);
   },
 
   getById(courseId: number) {
-    return api.get(`api/courses/${courseId}`).then((res) => res.data);
+    return api.get(`/api/courses/${courseId}`).then((res) => res.data);
   },
 
   create(data: unknown) {
-    return api.post("api/courses", data).then((res) => res.data);
+    return api.post("/api/courses", data).then((res) => res.data);
   },
 
   update(courseId: number, data: unknown) {
-    return api.put(`api/courses/${courseId}`, data).then((res) => res.data);
+    return api.put(`/api/courses/${courseId}`, data).then((res) => res.data);
   },
 
   delete(courseId: number) {
