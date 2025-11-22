@@ -1,12 +1,12 @@
 import React, { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import CourseDetails from "../pages/CourseDetails";
-import NotFound from "../pages/NotFound";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { fetchCourseById, fetchCourses } from "../store/slices/coursesSlice";
 import { fetchLessonsByCourse } from "../store/slices/lessonsSlice";
 import type { Lesson } from "../types/lesson";
 import type { Course } from "../types/course";
+import { NotFound } from "../pages/NotFound";
 
 const CourseDetailsWrapper: React.FC = () => {
   const { courseId } = useParams<{ courseId?: string }>();

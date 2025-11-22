@@ -53,16 +53,17 @@ const LessonPage: React.FC<LessonPageProps> = ({ lesson: propLesson }) => {
 
   const markdownContent = lesson.content || `# ${lesson.title}\n\nLesson content goes here.`
 
-  const toggleCompletion = () => {
-    if (!lesson) return
-    if (completed) {
-      dispatch(markLessonIncomplete(lesson.id))
-      setCompleted(false)
-    } else {
-      dispatch(markLessonComplete(lesson.id))
-      setCompleted(true)
-    }
+const toggleCompletion = () => {
+  if (!lesson) return;
+  if (completed) {
+    dispatch(markLessonIncomplete(lesson.id.toString()));
+    setCompleted(false);
+  } else {
+    dispatch(markLessonComplete(lesson.id.toString()));
+    setCompleted(true);
   }
+};
+
 
   // Map difficulty → color pill
   const difficultyColor = (difficulty?: string) => {
