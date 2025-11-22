@@ -1,14 +1,11 @@
 import axios from "axios";
 export const api = axios.create({
-  baseURL:
-    import.meta.env.VITE_API_URL ??
-    "https://backend-learning-system.onrender.com/api",
+  baseURL: import.meta.env.VITE_API_URL + "/api", // Append the /api here
   headers: {
     "Content-Type": "application/json",
     "x-api-key": import.meta.env.VITE_API_KEY,
   },
 });
-
 // -----------------------------
 // COURSE SERVICE
 // -----------------------------
