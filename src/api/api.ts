@@ -11,19 +11,19 @@ export const api = axios.create({
 // -----------------------------
 export const courseService = {
   getAll() {
-    return api.get("/courses").then((res) => res.data);
+    return api.get("api/courses").then((res) => res.data);
   },
 
   getById(courseId: number) {
-    return api.get(`/courses/${courseId}`).then((res) => res.data);
+    return api.get(`api/courses/${courseId}`).then((res) => res.data);
   },
 
   create(data: unknown) {
-    return api.post("/courses", data).then((res) => res.data);
+    return api.post("api/courses", data).then((res) => res.data);
   },
 
   update(courseId: number, data: unknown) {
-    return api.put(`/courses/${courseId}`, data).then((res) => res.data);
+    return api.put(`api/courses/${courseId}`, data).then((res) => res.data);
   },
 
   delete(courseId: number) {
@@ -33,30 +33,30 @@ export const courseService = {
 
 export const lessonService = {
   getAll(courseId: number) {
-    return api.get(`/courses/${courseId}/lessons`).then((res) => res.data);
+    return api.get(`api/courses/${courseId}/lessons`).then((res) => res.data);
   },
 
   getById(courseId: number, lessonId: number) {
     return api
-      .get(`/courses/${courseId}/lessons/${lessonId}`)
+      .get(`api/courses/${courseId}/lessons/${lessonId}`)
       .then((res) => res.data);
   },
 
   create(courseId: number, data: unknown) {
     return api
-      .post(`/courses/${courseId}/lessons`, data)
+      .post(`api/courses/${courseId}/lessons`, data)
       .then((res) => res.data);
   },
 
   update(courseId: number, lessonId: number, data: unknown) {
     return api
-      .put(`/courses/${courseId}/lessons/${lessonId}`, data)
+      .put(`api/courses/${courseId}/lessons/${lessonId}`, data)
       .then((res) => res.data);
   },
 
   delete(courseId: number, lessonId: number) {
     return api
-      .delete(`/courses/${courseId}/lessons/${lessonId}`)
+      .delete(`api/courses/${courseId}/lessons/${lessonId}`)
       .then((res) => res.data);
   },
 };
