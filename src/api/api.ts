@@ -3,12 +3,13 @@ import type { Course } from "../types/course";
 import type { Lesson } from "../types/lesson";
 
 const api = axios.create({
- baseURL:  "https://backend-learning-system.onrender.com/api", // should be http://localhost:5000/api
+  baseURL: `${import.meta.env.VITE_API_URL ?? "https://backend-learning-system.onrender.com"}/api`,
   headers: {
     "Content-Type": "application/json",
     Authorization: `Bearer ${import.meta.env.VITE_API_KEY}`,
   },
 });
+
 
 console.log("API URL:", import.meta.env.VITE_API_URL);
 console.log("API KEY:", import.meta.env.VITE_API_KEY);
