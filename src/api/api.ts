@@ -103,29 +103,13 @@
 
 import axios from "axios";
 
-// Helper function to ensure the baseURL always ends with '/api'
-const getBaseUrl = () => {
-  const envUrl = import.meta.env.VITE_API_URL ?? "https://backend-learning-system.onrender.com/api";
-  
-  // Ensure the base URL is just the root domain without /api
-  let rootUrl = envUrl;
-  if (rootUrl.endsWith('/api')) {
-      rootUrl = rootUrl.slice(0, -4); // Remove '/api' if it's there
-  }
-  
-  // Return the root URL plus the explicit /api prefix
-  return rootUrl + "/api";
-};
-
 export const api = axios.create({
-  // Use the guaranteed, non-redundant base URL
-  baseURL: getBaseUrl(), 
+  baseURL: import.meta.env.VITE_API_URL ?? "https://backend-learning-system.onrender.com/api",
   headers: {
     "Content-Type": "application/json",
-    "Authorization": `Bearer ${import.meta.env.VITE_API_KEY ?? "test-api-key-12345"}`,
+    "Authorization": `Bearer ${import.meta.env.VITE_API_KEY ?? "test-api-key-12345"}`
   },
-});
-
+})
 // -----------------------------
 // COURSE SERVICE
 // -----------------------------
