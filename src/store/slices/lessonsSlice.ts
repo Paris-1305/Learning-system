@@ -22,15 +22,16 @@ const initialState: LessonsState = {
 export const fetchLessonsByCourse = createAsyncThunk(
   "lessons/fetchByCourse",
   async (courseId: string, { getState }) => {
+    const id = Number(courseId); // convert string to number
     const state = getState() as { lessons: LessonsState };
     if (state.lessons.byCourse[courseId]?.data.length) {
-      // Return cached data
       return { courseId, data: state.lessons.byCourse[courseId].data };
     }
-    const data = await getLessonsByCourse(courseId);
-    return { courseId, data };
+    const data = await getLessonsByCourse(id); // pass number
+    return { courseId, data }; // keep courseId as string for Redux keys
   }
 );
+
 
 const lessonsSlice = createSlice({
   name: "lessons",
