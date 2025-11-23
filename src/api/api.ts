@@ -103,119 +103,138 @@
 
 import axios from "axios";
 
-// Helper function to ensure the baseURL always ends with '/api'
+// -----------------------------
+// Helper function to compute base URL safely
+// -----------------------------
 const getBaseUrl = () => {
   const envUrl = import.meta.env.VITE_API_URL ?? "https://backend-learning-system.onrender.com/api";
-  
-  // Ensure the base URL is just the root domain without /api
+
   let rootUrl = envUrl;
-  // This logic is designed to be failsafe:
-  // 1. If VITE_API_URL is '.../api', it becomes '...'
-  // 2. If VITE_API_URL is '...', it stays '...'
-  if (rootUrl.endsWith('/api')) {
-      rootUrl = rootUrl.slice(0, -4); 
+  if (rootUrl.endsWith("/api")) {
+    rootUrl = rootUrl.slice(0, -4);
   }
-  
-  // Return the root URL plus the explicit /api prefix, 
-  // ensuring the base URL for axios is ALWAYS '.../api'
+
   return rootUrl + "/api";
 };
 
+// -----------------------------
+// Axios instance with debugging interceptors
+// -----------------------------
 export const api = axios.create({
-  // Use the guaranteed, non-redundant base URL
-  baseURL: getBaseUrl(), 
+  baseURL: getBaseUrl(),
   headers: {
     "Content-Type": "application/json",
     "Authorization": `Bearer ${import.meta.env.VITE_API_KEY ?? "test-api-key-12345"}`,
   },
 });
 
+api.interceptors.request.use((config) => {
+  console.log("[AXIOS REQUEST]", {
+    method: config.method,
+    url: `${config.baseURL ?? ""}${config.url ?? ""}`, // safely handle undefined
+    headers: config.headers,
+    data: config.data,
+  });
+  return config;
+});
+
+
+// Log every request
+api.interceptors.request.use((config) => {
+  console.log("[AXIOS REQUEST]", {
+    method: config.method,
+    url: `${config.baseURL ?? ""}${config.url ?? ""}`, // safe fallback
+    headers: config.headers,
+    data: config.data,
+  });
+  return config;
+});
+
+// Log every response
+api.interceptors.response.use(
+  (response) => {
+    console.log("[AXIOS RESPONSE]", {
+      status: response.status,
+      url: `${response.config.baseURL ?? ""}${response.config.url ?? ""}`, // safe fallback
+      data: response.data,
+      headers: response.headers,
+    });
+    return response;
+  },
+  (error) => {
+    console.error("[AXIOS ERROR]", {
+      message: error.message,
+      code: error.code,
+      url: `${error.config?.baseURL ?? ""}${error.config?.url ?? ""}`, // safe fallback
+      method: error.config?.method,
+      headers: error.config?.headers,
+      status: error.response?.status,
+      responseData: error.response?.data,
+    });
+    return Promise.reject(error);
+  }
+);
+
 // -----------------------------
-// COURSE SERVICE (Includes GET, POST, PUT, DELETE)
+// COURSE SERVICE
 // -----------------------------
 export const courseService = {
   getAll() {
-    return api.get("/courses").then((res) => {
-      console.log("[API] Fetched all courses:", res.data);
-      return res.data;
-    });
+    return api.get("/courses").then((res) => res.data);
   },
 
   getById(courseId: number) {
-    return api.get(`/courses/${courseId}`).then((res) => {
-      console.log(`[API] Fetched course ${courseId}:`, res.data);
-      return res.data;
-    });
+    return api.get(`/courses/${courseId}`).then((res) => res.data);
   },
 
   create(data: unknown) {
-    return api.post("/courses", data).then((res) => {
-      console.log("[API] Created course:", res.data);
-      return res.data;
-    });
+    return api.post("/courses", data).then((res) => res.data);
   },
 
   update(courseId: number, data: unknown) {
-    return api.put(`/courses/${courseId}`, data).then((res) => {
-      console.log(`[API] Updated course ${courseId}:`, res.data);
-      return res.data;
-    });
+    return api.put(`/courses/${courseId}`, data).then((res) => res.data);
   },
 
   delete(courseId: number) {
-    return api.delete(`/courses/${courseId}`).then((res) => {
-      console.log(`[API] Deleted course ${courseId}:`, res.data);
-      return res.data;
-    });
+    return api.delete(`/courses/${courseId}`).then((res) => res.data);
   },
 };
 
 // -----------------------------
-// LESSON SERVICE (Includes GET, POST, PUT, DELETE, and nested routing)
+// LESSON SERVICE
 // -----------------------------
 export const lessonService = {
-  // GET all lessons for a specific course
   getAll(courseId: number) {
-    return api.get(`/courses/${courseId}/lessons`).then((res) => {
-      console.log(`[API] Fetched lessons for course ${courseId}:`, res.data);
-      return res.data;
-    });
+    return api.get(`/courses/${courseId}/lessons`).then((res) => res.data);
   },
 
-  // GET a specific lesson
   getById(courseId: number, lessonId: number) {
-    return api.get(`/courses/${courseId}/lessons/${lessonId}`).then((res) => {
-      console.log(`[API] Fetched lesson ${lessonId} for course ${courseId}:`, res.data);
-      return res.data;
-    });
+    return api.get(`/courses/${courseId}/lessons/${lessonId}`).then((res) => res.data);
   },
 
-  // POST a new lesson to a course
   create(courseId: number, data: unknown) {
-    return api.post(`/courses/${courseId}/lessons`, data).then((res) => {
-      console.log(`[API] Created lesson for course ${courseId}:`, res.data);
-      return res.data;
-    });
+    return api.post(`/courses/${courseId}/lessons`, data).then((res) => res.data);
   },
 
-  // PUT (Update) a specific lesson
   update(courseId: number, lessonId: number, data: unknown) {
-    return api.put(`/courses/${courseId}/lessons/${lessonId}`, data).then((res) => {
-      console.log(`[API] Updated lesson ${lessonId} for course ${courseId}:`, res.data);
-      return res.data;
-    });
+    return api.put(`/courses/${courseId}/lessons/${lessonId}`, data).then((res) => res.data);
   },
 
-  // DELETE a specific lesson
   delete(courseId: number, lessonId: number) {
-    return api.delete(`/courses/${courseId}/lessons/${lessonId}`).then((res) => {
-      console.log(`[API] Deleted lesson ${lessonId} for course ${courseId}:`, res.data);
-      return res.data;
-    });
+    return api.delete(`/courses/${courseId}/lessons/${lessonId}`).then((res) => res.data);
   },
 };
 
-// Helper functions for common operations
+// -----------------------------
+// Helper functions
+// -----------------------------
 export const getCourses = () => courseService.getAll();
 export const getLessonsByCourse = (courseId: number) => lessonService.getAll(courseId);
 export const getCourseById = (id: number) => courseService.getById(id);
+
+// -----------------------------
+// Test fetch immediately (debugging)
+// -----------------------------
+getCourses()
+  .then((courses) => console.log("[DEBUG] Courses fetched:", courses))
+  .catch((err) => console.error("[DEBUG] Fetch courses error:", err));
