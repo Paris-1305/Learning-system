@@ -4,9 +4,10 @@ export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL ?? "https://backend-learning-system.onrender.com/api",
   headers: {
     "Content-Type": "application/json",
-    "x-api-key": import.meta.env.VITE_API_KEY ?? "test-api-key-12345",
+    "Authorization": `Bearer ${import.meta.env.VITE_API_KEY ?? "test-api-key-12345"}`,
   },
 });
+
 
 // -----------------------------
 // COURSE SERVICE
@@ -90,4 +91,12 @@ export const lessonService = {
 
 // Helper functions
 export const getCourses = () => courseService.getAll();
+export const getLessonsByCourse = (courseId: number) => {
+  return lessonService.getAll(courseId);
+};
+export const getAllLessons = async () => {
+  const res = await api.get(`/lessons`); // backend endpoint to get all lessons
+  console.log("[API] Fetched all lessons:", res.data);
+  return res.data;
+};
 export const getCourseById = (id: number) => courseService.getById(id);
