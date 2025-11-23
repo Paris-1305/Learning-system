@@ -102,6 +102,8 @@
 // export const getCourseById = (id: number) => courseService.getById(id);
 
 import axios from "axios";
+import type { Lesson } from "../types/lesson";
+import type {Course } from "../types/course.ts";
 
 // -----------------------------
 // Helper function to compute base URL safely
@@ -179,27 +181,34 @@ api.interceptors.response.use(
 // COURSE SERVICE
 // -----------------------------
 export const courseService = {
-  getAll() {
-    return api.get("/courses").then((res) => res.data);
+  getAll(): Promise<Course[]> {
+    return api.get("/courses")
+      .then((res) => {
+        console.log("[API] Fetched all courses:", res.data);
+        return res.data as Course[];
+      });
   },
 
-  getById(courseId: number) {
-    return api.get(`/courses/${courseId}`).then((res) => res.data);
+  getById(courseId: number): Promise<Course> {
+    return api.get(`/courses/${courseId}`)
+      .then((res) => res.data as Course);
   },
 
-  create(data: unknown) {
-    return api.post("/courses", data).then((res) => res.data);
+  create(data: Course): Promise<Course> {
+    return api.post("/courses", data)
+      .then((res) => res.data as Course);
   },
 
-  update(courseId: number, data: unknown) {
-    return api.put(`/courses/${courseId}`, data).then((res) => res.data);
+  update(courseId: number, data: Partial<Course>): Promise<Course> {
+    return api.put(`/courses/${courseId}`, data)
+      .then((res) => res.data as Course);
   },
 
-  delete(courseId: number) {
-    return api.delete(`/courses/${courseId}`).then((res) => res.data);
+  delete(courseId: number): Promise<{ success: boolean }> {
+    return api.delete(`/courses/${courseId}`)
+      .then((res) => res.data);
   },
 };
-
 // -----------------------------
 // LESSON SERVICE
 // -----------------------------
@@ -229,6 +238,18 @@ export const lessonService = {
 // Helper functions
 // -----------------------------
 export const getCourses = () => courseService.getAll();
+// api.ts
+export const getAllLessons = async (): Promise<Lesson[]> => {
+  try {
+    const res = await api.get("/lessons"); // ensure your backend has /lessons endpoint
+    console.log("[API] Fetched all lessons:", res.data);
+    return res.data;
+  } catch (err) {
+    console.error("[API] Failed to fetch all lessons:", err);
+    throw err;
+  }
+};
+
 export const getLessonsByCourse = (courseId: number) => lessonService.getAll(courseId);
 export const getCourseById = (id: number) => courseService.getById(id);
 
