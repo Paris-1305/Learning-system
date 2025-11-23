@@ -101,26 +101,174 @@
 // };
 // export const getCourseById = (id: number) => courseService.getById(id);
 
+// import axios from "axios";
+// import type { Lesson } from "../types/lesson";
+// import type {Course } from "../types/course.ts";
+
+// // -----------------------------
+// // Helper function to compute base URL safely
+// // -----------------------------
+// const getBaseUrl = () => {
+//   const envUrl = import.meta.env.VITE_API_URL ?? "https://backend-learning-system.onrender.com/api";
+
+//   let rootUrl = envUrl;
+//   if (rootUrl.endsWith("/api")) {
+//     rootUrl = rootUrl.slice(0, -4);
+//   }
+
+//   return rootUrl + "/api";
+// };
+
+// // -----------------------------
+// // Axios instance with debugging interceptors
+// // -----------------------------
+// export const api = axios.create({
+//   baseURL: getBaseUrl(),
+//   headers: {
+//     "Content-Type": "application/json",
+//     "Authorization": `Bearer ${import.meta.env.VITE_API_KEY ?? "test-api-key-12345"}`,
+//   },
+// });
+
+// api.interceptors.request.use((config) => {
+//   console.log("[AXIOS REQUEST]", {
+//     method: config.method,
+//     url: `${config.baseURL ?? ""}${config.url ?? ""}`, // safely handle undefined
+//     headers: config.headers,
+//     data: config.data,
+//   });
+//   return config;
+// });
+
+
+// // Log every request
+// api.interceptors.request.use((config) => {
+//   console.log("[AXIOS REQUEST]", {
+//     method: config.method,
+//     url: `${config.baseURL ?? ""}${config.url ?? ""}`, // safe fallback
+//     headers: config.headers,
+//     data: config.data,
+//   });
+//   return config;
+// });
+
+// // Log every response
+// api.interceptors.response.use(
+//   (response) => {
+//     console.log("[AXIOS RESPONSE]", {
+//       status: response.status,
+//       url: `${response.config.baseURL ?? ""}${response.config.url ?? ""}`, // safe fallback
+//       data: response.data,
+//       headers: response.headers,
+//     });
+//     return response;
+//   },
+//   (error) => {
+//     console.error("[AXIOS ERROR]", {
+//       message: error.message,
+//       code: error.code,
+//       url: `${error.config?.baseURL ?? ""}${error.config?.url ?? ""}`, // safe fallback
+//       method: error.config?.method,
+//       headers: error.config?.headers,
+//       status: error.response?.status,
+//       responseData: error.response?.data,
+//     });
+//     return Promise.reject(error);
+//   }
+// );
+
+// // -----------------------------
+// // COURSE SERVICE
+// // -----------------------------
+// export const courseService = {
+//   getAll() {
+//     return api.get("/courses").then((res) => res.data);
+//   },
+
+//   getById(courseId: number) {
+//     return api.get(`/courses/${courseId}`).then((res) => res.data);
+//   },
+
+//   create(data: unknown) {
+//     return api.post("/courses", data).then((res) => res.data);
+//   },
+
+//   update(courseId: number, data: unknown) {
+//     return api.put(`/courses/${courseId}`, data).then((res) => res.data);
+//   },
+
+//   delete(courseId: number) {
+//     return api.delete(`/courses/${courseId}`).then((res) => res.data);
+//   },
+// };
+
+// // -----------------------------
+// // LESSON SERVICE
+// // -----------------------------
+// export const lessonService = {
+//   getAll(courseId: number) {
+//     return api.get(`/courses/${courseId}/lessons`).then((res) => res.data);
+//   },
+
+//   getById(courseId: number, lessonId: number) {
+//     return api.get(`/courses/${courseId}/lessons/${lessonId}`).then((res) => res.data);
+//   },
+
+//   create(courseId: number, data: unknown) {
+//     return api.post(`/courses/${courseId}/lessons`, data).then((res) => res.data);
+//   },
+
+//   update(courseId: number, lessonId: number, data: unknown) {
+//     return api.put(`/courses/${courseId}/lessons/${lessonId}`, data).then((res) => res.data);
+//   },
+
+//   delete(courseId: number, lessonId: number) {
+//     return api.delete(`/courses/${courseId}/lessons/${lessonId}`).then((res) => res.data);
+//   },
+// };
+
+// // -----------------------------
+// // Helper functions
+// // -----------------------------
+// export const getCourses = () => courseService.getAll();
+// // api.ts
+// export const getAllLessons = async (): Promise<Lesson[]> => {
+//   try {
+//     const res = await api.get("/lessons"); // ensure your backend has /lessons endpoint
+//     console.log("[API] Fetched all lessons:", res.data);
+//     return res.data;
+//   } catch (err) {
+//     console.error("[API] Failed to fetch all lessons:", err);
+//     throw err;
+//   }
+// };
+
+// export const getLessonsByCourse = (courseId: number) => lessonService.getAll(courseId);
+// export const getCourseById = (id: number) => courseService.getById(id);
+
+// // -----------------------------
+// // Test fetch immediately (debugging)
+// // -----------------------------
+// getCourses()
+//   .then((courses) => console.log("[DEBUG] Courses fetched:", courses))
+//   .catch((err) => console.error("[DEBUG] Fetch courses error:", err));
+
 import axios from "axios";
 import type { Lesson } from "../types/lesson";
-import type {Course } from "../types/course.ts";
+import type { Course } from "../types/course";
 
 // -----------------------------
 // Helper function to compute base URL safely
 // -----------------------------
 const getBaseUrl = () => {
   const envUrl = import.meta.env.VITE_API_URL ?? "https://backend-learning-system.onrender.com/api";
-
   let rootUrl = envUrl;
-  if (rootUrl.endsWith("/api")) {
-    rootUrl = rootUrl.slice(0, -4);
-  }
-
+  if (rootUrl.endsWith("/api")) rootUrl = rootUrl.slice(0, -4);
   return rootUrl + "/api";
 };
 
 // -----------------------------
-// Axios instance with debugging interceptors
+// Axios instance
 // -----------------------------
 export const api = axios.create({
   baseURL: getBaseUrl(),
@@ -130,34 +278,24 @@ export const api = axios.create({
   },
 });
 
+// -----------------------------
+// Axios interceptors for debugging
+// -----------------------------
 api.interceptors.request.use((config) => {
   console.log("[AXIOS REQUEST]", {
     method: config.method,
-    url: `${config.baseURL ?? ""}${config.url ?? ""}`, // safely handle undefined
+    url: `${config.baseURL ?? ""}${config.url ?? ""}`,
     headers: config.headers,
     data: config.data,
   });
   return config;
 });
 
-
-// Log every request
-api.interceptors.request.use((config) => {
-  console.log("[AXIOS REQUEST]", {
-    method: config.method,
-    url: `${config.baseURL ?? ""}${config.url ?? ""}`, // safe fallback
-    headers: config.headers,
-    data: config.data,
-  });
-  return config;
-});
-
-// Log every response
 api.interceptors.response.use(
   (response) => {
     console.log("[AXIOS RESPONSE]", {
       status: response.status,
-      url: `${response.config.baseURL ?? ""}${response.config.url ?? ""}`, // safe fallback
+      url: `${response.config.baseURL ?? ""}${response.config.url ?? ""}`,
       data: response.data,
       headers: response.headers,
     });
@@ -167,7 +305,7 @@ api.interceptors.response.use(
     console.error("[AXIOS ERROR]", {
       message: error.message,
       code: error.code,
-      url: `${error.config?.baseURL ?? ""}${error.config?.url ?? ""}`, // safe fallback
+      url: `${error.config?.baseURL ?? ""}${error.config?.url ?? ""}`,
       method: error.config?.method,
       headers: error.config?.headers,
       status: error.response?.status,
@@ -182,54 +320,47 @@ api.interceptors.response.use(
 // -----------------------------
 export const courseService = {
   getAll(): Promise<Course[]> {
-    return api.get("/courses")
-      .then((res) => {
-        console.log("[API] Fetched all courses:", res.data);
-        return res.data as Course[];
-      });
+    return api.get<Course[]>("/courses").then((res) => res.data);
   },
 
   getById(courseId: number): Promise<Course> {
-    return api.get(`/courses/${courseId}`)
-      .then((res) => res.data as Course);
+    return api.get<Course>(`/courses/${courseId}`).then((res) => res.data);
   },
 
   create(data: Course): Promise<Course> {
-    return api.post("/courses", data)
-      .then((res) => res.data as Course);
+    return api.post<Course>("/courses", data).then((res) => res.data);
   },
 
   update(courseId: number, data: Partial<Course>): Promise<Course> {
-    return api.put(`/courses/${courseId}`, data)
-      .then((res) => res.data as Course);
+    return api.put<Course>(`/courses/${courseId}`, data).then((res) => res.data);
   },
 
   delete(courseId: number): Promise<{ success: boolean }> {
-    return api.delete(`/courses/${courseId}`)
-      .then((res) => res.data);
+    return api.delete(`/courses/${courseId}`).then((res) => res.data);
   },
 };
+
 // -----------------------------
 // LESSON SERVICE
 // -----------------------------
 export const lessonService = {
-  getAll(courseId: number) {
-    return api.get(`/courses/${courseId}/lessons`).then((res) => res.data);
+  getAll(courseId: number): Promise<Lesson[]> {
+    return api.get<Lesson[]>(`/courses/${courseId}/lessons`).then((res) => res.data);
   },
 
-  getById(courseId: number, lessonId: number) {
-    return api.get(`/courses/${courseId}/lessons/${lessonId}`).then((res) => res.data);
+  getById(courseId: number, lessonId: number): Promise<Lesson> {
+    return api.get<Lesson>(`/courses/${courseId}/lessons/${lessonId}`).then((res) => res.data);
   },
 
-  create(courseId: number, data: unknown) {
-    return api.post(`/courses/${courseId}/lessons`, data).then((res) => res.data);
+  create(courseId: number, data: Lesson): Promise<Lesson> {
+    return api.post<Lesson>(`/courses/${courseId}/lessons`, data).then((res) => res.data);
   },
 
-  update(courseId: number, lessonId: number, data: unknown) {
-    return api.put(`/courses/${courseId}/lessons/${lessonId}`, data).then((res) => res.data);
+  update(courseId: number, lessonId: number, data: Partial<Lesson>): Promise<Lesson> {
+    return api.put<Lesson>(`/courses/${courseId}/lessons/${lessonId}`, data).then((res) => res.data);
   },
 
-  delete(courseId: number, lessonId: number) {
+  delete(courseId: number, lessonId: number): Promise<{ success: boolean }> {
     return api.delete(`/courses/${courseId}/lessons/${lessonId}`).then((res) => res.data);
   },
 };
@@ -238,11 +369,13 @@ export const lessonService = {
 // Helper functions
 // -----------------------------
 export const getCourses = () => courseService.getAll();
-// api.ts
+export const getCourseById = (id: number) => courseService.getById(id);
+export const getLessonsByCourse = (courseId: number) => lessonService.getAll(courseId);
+
+// Optional: fetch all lessons if backend has /lessons endpoint
 export const getAllLessons = async (): Promise<Lesson[]> => {
   try {
-    const res = await api.get("/lessons"); // ensure your backend has /lessons endpoint
-    console.log("[API] Fetched all lessons:", res.data);
+    const res = await api.get<Lesson[]>("/lessons");
     return res.data;
   } catch (err) {
     console.error("[API] Failed to fetch all lessons:", err);
@@ -250,11 +383,8 @@ export const getAllLessons = async (): Promise<Lesson[]> => {
   }
 };
 
-export const getLessonsByCourse = (courseId: number) => lessonService.getAll(courseId);
-export const getCourseById = (id: number) => courseService.getById(id);
-
 // -----------------------------
-// Test fetch immediately (debugging)
+// Debugging: fetch immediately
 // -----------------------------
 getCourses()
   .then((courses) => console.log("[DEBUG] Courses fetched:", courses))
